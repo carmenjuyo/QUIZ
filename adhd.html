@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADHD Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; background: #f9f9f9; }
+    h1 { text-align: center; }
+    .question { margin-bottom: 25px; padding: 15px; background: #fff; border-radius: 8px; }
+    .answers label { display: block; margin-top: 5px; }
+    .result { padding: 15px; background: #e6ffe6; border: 1px solid #ccc; margin-top: 20px; border-radius: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <h1>🧠 ADHD Quiz</h1>
+  <form id="quizForm">
+    <div id="quizContainer"></div>
+    <button type="submit">See My Result</button>
+  </form>
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script>
+    const questions = [
+  {
+    q: "How do small tasks treat you?",
+    options: [
+      { text: "They show up dressed like giant monsters", score: 3 },
+      { text: "They multiply when I’m not looking", score: 2 },
+      { text: "I shrink them until they disappear entirely", score: 1 },
+      { text: "I usually knock them out quickly and move on", score: 0 }
+    ]
+  },
+  {
+    q: "What’s your relationship with time?",
+    options: [
+      { text: "Unreliable narrator", score: 3 },
+      { text: "Friends who don’t text back", score: 2 },
+      { text: "Intimate but inconsistent", score: 1 },
+      { text: "Respectful. I show up early to everything", score: 0 }
+    ]
+  },
+  {
+    q: "What happens to your brain mid-conversation?",
+    options: [
+      { text: "I nod a lot and hope my face is doing something smart", score: 3 },
+      { text: "I catch most of it, but miss pieces and fake the rest", score: 2 },
+      { text: "I’m laser-focused unless it drifts off without me", score: 1 },
+      { text: "I usually stay focused — unless someone says 'pizza'", score: 0 }
+    ]
+  },
+  {
+    q: "How do you and your belongings get along?",
+    options: [
+      { text: "We part ways often and dramatically", score: 3 },
+      { text: "I lose things, but usually find them somewhere weird", score: 2 },
+      { text: "Everything has a place. I just don’t always use it", score: 1 },
+      { text: "I tend to keep track unless it walks off on its own", score: 0 }
+    ]
+  },
+  {
+    q: "How do deadlines affect your soul?",
+    options: [
+      { text: "I don’t see the point until it’s screaming at me", score: 3 },
+      { text: "I plan to be early, then… suddenly I’m not", score: 2 },
+      { text: "I get things done before I can sabotage myself", score: 1 },
+      { text: "I usually plan ahead and get it done with time to spare", score: 0 }
+    ]
+  }
+  {
+    q: "How does your brain react to routines?",
+    options: [
+      { text: "It rebels on principle", score: 3 },
+      { text: "It loves the idea but ghosts the execution", score: 2 },
+      { text: "It needs them but doesn’t trust them", score: 1 },
+      { text: "It thrives with a little structure and flexibility", score: 0 }
+    ]
+  },
+  {
+    q: "What’s your vibe when it’s time to 'just start'?",
+    options: [
+      { text: "Mentally? I’ve already run away. Physically? Still staring", score: 3 },
+      { text: "I make a snack and wait for the task to initiate me", score: 2 },
+      { text: "I pretend I’m starting, then do something else instead", score: 1 },
+      { text: "I break it into steps, make a cup of tea, and get moving", score: 0 }
+    ]
+  },
+  {
+    q: "When you get feedback, your brain...",
+    options: [
+      { text: "Pretends not to care, then spirals at 3am", score: 3 },
+      { text: "Turns it into a 3-hour shame documentary", score: 2 },
+      { text: "Collects it and files it logically", score: 1 },
+      { text: "Takes it in, makes notes, and moves forward", score: 0 }
+    ]
+  },
+  {
+    q: "How often do you vanish into a hobby, hyperfixation, or rabbit hole?",
+    options: [
+      { text: "Please don’t ask what time it is", score: 3 },
+      { text: "Sometimes I resurface with souvenirs", score: 2 },
+      { text: "Occasionally, but with regrets", score: 1 },
+      { text: "Only when I choose to deep-dive — otherwise, I stay pretty balanced", score: 0 }
+    ]
+  },
+  {
+    q: "How do you know you forgot something?",
+    options: [
+      { text: "I find it in the microwave days later", score: 3 },
+      { text: "Someone texts me asking '???'", score: 2 },
+      { text: "A sinking feeling and frantic retracing", score: 1 },
+      { text: "I usually don’t — because I rarely forget", score: 0 }
+    ]
+  },
+  {
+    q: "What’s your default reaction when a task feels boring?",
+    options: [
+      { text: "I abandon it and chase something shiny", score: 3 },
+      { text: "I try, but end up cleaning my entire kitchen instead", score: 2 },
+      { text: "I push through with a few breaks", score: 1 },
+      { text: "I save it for later and do something productive instead", score: 0 }
+    ]
+  },
+  {
+    q: "How do you manage a long to-do list?",
+    options: [
+      { text: "I look at it, panic, and do none of it", score: 3 },
+      { text: "I pick something random and hope it helps", score: 2 },
+      { text: "I organise it and check things off steadily", score: 1 },
+      { text: "I usually prioritise well and follow through", score: 0 }
+    ]
+  },
+  {
+    q: "When you try a new routine or planner, what happens?",
+    options: [
+      { text: "I obsess over it for 3 days, then never use it again", score: 3 },
+      { text: "I like it, but forget it exists by day four", score: 2 },
+      { text: "I adjust and keep using it fairly well", score: 1 },
+      { text: "I stick with the systems that work for me", score: 0 }
+    ]
+  },
+  {
+    q: "What do transitions between tasks feel like?",
+    options: [
+      { text: "Mentally painful. I freeze.", score: 3 },
+      { text: "I get distracted midway and do something else", score: 2 },
+      { text: "I take a breath and shift gears", score: 1 },
+      { text: "I like changing things up. It energises me", score: 0 }
+    ]
+  },
+  {
+    q: "How do you typically handle a sudden change in plans?",
+    options: [
+      { text: "Meltdown mode: engaged", score: 3 },
+      { text: "I roll with it but feel frazzled", score: 2 },
+      { text: "I adjust and make it work", score: 1 },
+      { text: "I’m pretty flexible — change keeps things interesting", score: 0 }
+    ]
+  },
+  {
+    q: "You have free time. What’s your brain do?",
+    options: [
+      { text: "Overwhelm. I end up doing nothing", score: 3 },
+      { text: "I do 6 unrelated things in 10 minutes", score: 2 },
+      { text: "I take a moment and choose what feels right", score: 1 },
+      { text: "I relax or tackle a hobby I enjoy", score: 0 }
+    ]
+      ]
+  },
+  {
+    q: "How does your brain process simple instructions?",
+    options: [
+      { text: "I forget step 2 while doing step 1", score: 3 },
+      { text: "I need to hear them more than once", score: 2 },
+      { text: "I follow them just fine most of the time", score: 1 },
+      { text: "I usually anticipate what’s coming next", score: 0 }
+    ]
+  },
+  {
+    q: "What happens when you’re asked to wait in line or sit still?",
+    options: [
+      { text: "I fidget, zone out, or leave mentally", score: 3 },
+      { text: "I scroll my phone or talk to myself", score: 2 },
+      { text: "I wait, maybe a little impatiently", score: 1 },
+      { text: "I use it to people-watch or plan my day", score: 0 }
+    ]
+  },
+  {
+    q: "How do you manage email or messages?",
+    options: [
+      { text: "Ghosted by 62 unopened ones", score: 3 },
+      { text: "I respond… eventually", score: 2 },
+      { text: "I try to clear them daily", score: 1 },
+      { text: "Inbox zero is my love language", score: 0 }
+    ]
+  },
+  {
+    q: "What does your brain do when it’s bedtime?",
+    options: [
+      { text: "Reminds me of every mistake since 2004", score: 3 },
+      { text: "Writes a novel or plans a fake conversation", score: 2 },
+      { text: "Occasionally wanders, but I fall asleep soon", score: 1 },
+      { text: "I relax, maybe read, then drift off", score: 0 }
+    ]
+  },
+  {
+    q: "How do you handle background noise?",
+    options: [
+      { text: "My brain short-circuits", score: 3 },
+      { text: "I cope, but it’s distracting", score: 2 },
+      { text: "I tune it out or adapt", score: 1 },
+      { text: "I barely notice it", score: 0 }
+    ]
+  },
+  {
+    q: "What’s your relationship with forgetting appointments?",
+    options: [
+      { text: "Legendary. Even reminders don’t help", score: 3 },
+      { text: "I’ve missed a few… okay, several", score: 2 },
+      { text: "I occasionally slip up, but not often", score: 1 },
+      { text: "I’m usually early and bring snacks", score: 0 }
+    ]
+  },
+  {
+    q: "You need to complete a boring but important task. What happens?",
+    options: [
+      { text: "I do literally anything else", score: 3 },
+      { text: "I need external pressure or guilt", score: 2 },
+      { text: "I plan a reward and push through", score: 1 },
+      { text: "I get it done, then treat myself", score: 0 }
+    ]
+  },
+  {
+    q: "How do you tend to organise your thoughts?",
+    options: [
+      { text: "They show up like fireworks in my brain", score: 3 },
+      { text: "I start strong, then trail off", score: 2 },
+      { text: "It takes effort, but I stay on track", score: 1 },
+      { text: "I think out loud or write it down", score: 0 }
+    ]
+  },
+  {
+    q: "When you get a new idea...",
+    options: [
+      { text: "I drop everything and chase it", score: 3 },
+      { text: "I add it to a growing mental pile", score: 2 },
+      { text: "I file it for later", score: 1 },
+      { text: "I explore it thoughtfully or jot it down", score: 0 }
+    ]
+  },
+  {
+    q: "What’s your go-to reaction when someone interrupts your focus?",
+    options: [
+      { text: "Mental crash. I can’t restart", score: 3 },
+      { text: "I lose my train of thought", score: 2 },
+      { text: "I pause, reset, and resume", score: 1 },
+      { text: "I don’t mind — I bounce back easily", score: 0 }
+    ]
+  },
+  {
+    q: "How’s your short-term memory?",
+    options: [
+      { text: "What were we just talking about?", score: 3 },
+      { text: "Decent, unless I’m tired or stressed", score: 2 },
+      { text: "Mostly fine, I make notes when needed", score: 1 },
+      { text: "I remember the important stuff — and the snacks", score: 0 }
+    ]
+  },
+  {
+    q: "What happens when your routine changes?",
+    options: [
+      { text: "I lose momentum and get stuck", score: 3 },
+      { text: "It throws me off, but I recover", score: 2 },
+      { text: "I shift things and adapt", score: 1 },
+      { text: "I welcome it — keeps life interesting", score: 0 }
+    ]
+  },
+  {
+    q: "How do you feel about planning ahead?",
+    options: [
+      { text: "I hate it. I avoid it.", score: 3 },
+      { text: "I try but don’t stick with it", score: 2 },
+      { text: "I do it when I need to", score: 1 },
+      { text: "Planning is my superpower", score: 0 }
+    ]
+  },
+  {
+    q: "When faced with multiple tasks, what do you do?",
+    options: [
+      { text: "I panic and do none of them", score: 3 },
+      { text: "I bounce between them with no real progress", score: 2 },
+      { text: "I tackle the top priority first", score: 1 },
+      { text: "I make a quick plan and work through it", score: 0 }
+    ]
+  }
+];
+
+    const container = document.getElementById("quizContainer");
+    questions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<strong>${index + 1}. ${q.q}</strong><div class="answers">${q.options
+        .map((opt, i) => `
+        <label><input type="radio" name="q${index}" value="${opt.score}" required> ${opt.text}</label>
+      `).join('')}</div>`;
+      container.appendChild(div);
+    });
+
+    document.getElementById("quizForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const data = new FormData(e.target);
+      let score = 0;
+      for (let [_, value] of data.entries()) {
+        score += parseInt(value);
+      }
+
+      let resultText = "";
+      if (score >= 65) resultText = "🔴 Strong Signs of ADHD: Your brain shows lots of classic ADHD patterns. You might benefit from professional support or structure.";
+      else if (score >= 45) resultText = "🟡 Some Traits, Maybe ADHD: You relate to ADHD tendencies, but they may not be consistent. You could still benefit from tools designed for ADHD.";
+      else if (score >= 25) resultText = "🟢 Unlikely ADHD: You have some scattered moments, but nothing that points clearly to ADHD.";
+      else resultText = "🟣 Why Are You Even Here?: You probably don’t struggle with ADHD-like issues, but we’re glad you took the quiz!";
+
+      const resultBox = document.getElementById("result");
+      resultBox.textContent = resultText;
+      resultBox.style.display = "block";
+    });
+  </script>
+</body>
+</html>
